@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "utils.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +29,7 @@ void *pedidos(void *arg){
     if (fd==-1) {
         closed = 1;
         writeRegister(i,pid,tid,time,-1,CLOSD);
-        printf("WC is closed !!!\n");
+        printf("WC is closed!\n");
         return NULL;
     }
 

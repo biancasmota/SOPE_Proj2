@@ -1,6 +1,7 @@
 #include "utils.h"
 
 struct timespec start_time;
+struct timespec current;
 
 void startTime(){
     clock_gettime(CLOCK_MONOTONIC, &start_time);
