@@ -36,7 +36,7 @@ void *pedidos(void *arg)
     if (fd==-1)
     {
         writeRegister(i,pid,tid,time,-1,CLOSD);
-        printf("WC is closed\n");
+        //printf("WC is closed\n");
         return NULL;
     }
 
@@ -117,20 +117,26 @@ int main(int argc, char *argv[])
         fprintf(stderr,"Argument error\n");
         return -1;
     }
-    char fifopath[SIZE]="tmp/";
+    //char fifopath[SIZE]="tmp/";
     pthread_t threads[MAX_THR];
     int thr=0;
 
-    strcat(fifopath,fifo);
+    //strcat(fifopath,fifo);
 
-    while(elapsed_time()< (double) nsecs)
+    time_t start, end;
+    double elapsed;
+    start = time(NULL);
+    do
     {
-        pthread_create(&threads[thr],NULL,pedidos,fifopath);
+        end = time(NULL);
+        pthread_create(&threads[thr],NULL,pedidos,fifo);
         pthread_detach(threads[thr]);
-        usleep(100000);
         thr++;
         i++;
+        usleep(100000);
+        elapsed = difftime(end, start);
     }
+    while (elapsed < nsecs);
 
     return 0;
 }
