@@ -49,7 +49,7 @@ void *pedidos(void *arg)
     sprintf(temp,"%d",pid);
     strcat(private_fifo,temp);
     strcat(private_fifo,".");
-    sprintf(temp,"%ld",pthread_self());
+    sprintf(temp,"%ld",tid);
     strcat(private_fifo,temp);
 
     if (mkfifo(private_fifo, 0660) != 0) //create private FIFO
