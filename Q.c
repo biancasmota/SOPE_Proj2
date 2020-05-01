@@ -70,37 +70,8 @@ process_client_args* new_ProcessClientArgs()
 
 bool parse_client_args(process_client_args* args, char* str)
 {
-    char * token = strtok(str,";");
-    if(token != NULL && numStr(token))
-    {
-        args->i = atoi(token);
-    }
-    else return false;
-    token = strtok(NULL,";");
-    if(token != NULL && numStr(token))
-    {
-        args->pid = atoi(token);
-    }
-    else return false;
-    token = strtok(NULL,";");
-    if(token != NULL && numStr(token))
-    {
-        args->tid = atoi(token);
-    }
-    else return false;
-    token = strtok(NULL,";");
-    if(token != NULL && numStr(token))
-    {
-        args->dur = atoi(token);
-    }
-    else return false;
-    token = strtok(NULL,";");
-    if(token != NULL && numStr(token))
-    {
-        args->pl = atoi(token);
-        return true;
-    }
-    return false;
+    sscanf(str, "[ %d, %d, %ld, %d, %d ]\n", &args->i, &args->pid, &args->tid, &args->dur, &args->pl);
+    return true;
 }
 
 void* process_client(void* arg)
@@ -110,12 +81,12 @@ void* process_client(void* arg)
     
     process_client_args* args = (process_client_args*) arg;
     
-    sprintf(path,"/tmp/%d.%d",args->pid,args->tid);
+    sprintf(path,"/tmp/%d.%ld",args->pid,args->tid);
     fd = open(path,O_WRONLY);
 
     if(fd = -1)
     {
-        printf("%ld;%d ; %d ; %d ; %d ; %d ; GAVUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);        
+        printf("%ld;%d ; %d ; %ld ; %d ; %d ; GAVUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);        
     }
     else
     {
@@ -124,8 +95,8 @@ void* process_client(void* arg)
         
         if(!wc_open)
         {
-            printf("%ld;%d ; %d ; %d ; -1 ; -1 ; 2LATE\n", time(NULL), args->i, args->pid, args->tid);
-            printf(message,"%d; %d; %d; -1; -1", args->i, args->pid, args->tid);
+            printf("%ld;%d ; %d ; %ld ; -1 ; -1 ; 2LATE\n", time(NULL), args->i, args->pid, args->tid);
+            sprintf(message,"[ %d, %d, %ld, -1, -1 ]\n", args->i, args->pid, args->tid);
             messagelen=strlen(message)+1;
             write(fd,message,messagelen);
         }
@@ -140,12 +111,12 @@ void* process_client(void* arg)
                     places[i] = 1;
                 }
             }            
-            printf(message,"%d; %d; %d; %d; %d", args->i, args->pid, args->tid, args->dur, args->pl);
+            sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, args->pid, args->tid, args->dur, args->pl);
             messagelen=strlen(message)+1;
             write(fd,message,messagelen);
-            printf("%ld;%d ; %d ; %d ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
+            printf("%ld;%d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
             usleep(args->dur * 1000);
-            printf("%ld;%d ; %d ; %d ; %d ; %d ; TIMUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
+            printf("%ld;%d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
             places[args->pl] = 0;
         }
     }
@@ -169,7 +140,7 @@ void* look_for_clients(void* FIFO_path)
             fprintf(stderr,"Communication error: bad args\n");
         }    
         else{
-            printf("%ld;%d ; %d ; %d ; %d ; %d ; RECVD\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
+            printf("%ld;%d ; %d ; %ld ; %d ; %d ; RECVD\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
             if(pthread_create(&tid[curr_thread], NULL, process_client, args) != OK)
             {
                 pthread_join(tid[curr_thread],NULL);

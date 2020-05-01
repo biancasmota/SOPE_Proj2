@@ -24,7 +24,7 @@ typedef struct process_client_args
 {
 	int i;
 	int pid;
-	int tid;
+	long tid;
 	int dur;
 	int pl;
 }process_client_args;

@@ -40,12 +40,13 @@ void *pedidos(void *arg)
         return NULL;
     }
 
+
     sprintf(msg, "[ %d, %d, %ld, %d, %d ]\n", i, pid, tid, time, -1);
     if (write(fd, &msg, SIZE) < 0)
         return NULL;
 
     close(fd);
-
+/*
     char private_fifo[SIZE]="tmp/";
     int fd_priv;
     char temp[SIZE];
@@ -57,6 +58,8 @@ void *pedidos(void *arg)
     strcat(private_fifo,".");
     sprintf(temp,"%ld",tid);
     strcat(private_fifo,temp);
+
+    printf("%s\n", private_fifo);
 
     if (mkfifo(private_fifo, 0660) != 0) //create private FIFO
     {
@@ -82,7 +85,7 @@ void *pedidos(void *arg)
     close(fd_priv);
     if(unlink(private_fifo) < 0)    //Destroys private FIFO
         printf("Error destroying Private FIFO\n");
-
+*/
 }
 
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
@@ -130,10 +133,10 @@ int main(int argc, char *argv[])
     {
         end = time(NULL);
         pthread_create(&threads[thr],NULL,pedidos,fifo);
-        pthread_detach(threads[thr]);
+        //pthread_detach(threads[thr]);
         thr++;
         i++;
-        usleep(100000);
+        usleep(100 * 1000);
         elapsed = difftime(end, start);
     }
     while (elapsed < nsecs);
