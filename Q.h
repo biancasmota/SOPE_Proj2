@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -15,11 +17,8 @@
 #define OK 0
 
 bool wc_open = true;
-
-typedef struct look_for_clients_args
-{
-	char FIFO_path[MAX_FILE_NAME_LENGHT];
-}look_for_clients_args;
+int main_fifo_fd = -1;
+int places[MAX_THREADS] = {0};
 
 typedef struct process_client_args
 {
@@ -32,3 +31,9 @@ typedef struct process_client_args
 
 bool numStr(char* str);
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path);
+int readline(int fd, char *str);
+process_client_args* new_ProcessClientArgs();
+bool parse_client_args(process_client_args* args, char* str);
+void* process_client(void* arg);
+void* look_for_clients(void* FIFO_path);
+
