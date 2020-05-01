@@ -2,6 +2,28 @@
 #include "utils.c"
 #include "U.h"
 
+bool numStr(char* str)
+{
+    bool started = false;
+    bool finished = false;
+    int first = 0;
+    for(int i = 0; str[i] != '\0'; i++)
+    {
+        if(!started && str[i] != ' ')
+            if(!isdigit(str[i]) && str[i] != '-') return false;
+            else{started = true; first = i;}
+        if(started)
+        {
+            if(i == first && (!isdigit(str[i]) && str[i] != '-')) return false;
+            if(i != first && !isdigit(str[i]))
+                if(str[i] == ' ') finished = true;
+                else return false;
+            if(finished && str[i] != ' ') return false;
+        }
+    }
+    return started;
+}
+
 void *pedidos(void *arg)
 {
     char *fifo = arg;
@@ -89,8 +111,8 @@ bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
 int main(int argc, char *argv[])
 {
     double nsecs;
-    char FIFO_path[1024];
-    if(!processArgs(argc, argv, &nsecs, FIFO_path))
+    char fifo[1024];
+    if(!processArgs(argc, argv, &nsecs, fifo))
     {
         fprintf(stderr,"Argument error\n");
         return -1;

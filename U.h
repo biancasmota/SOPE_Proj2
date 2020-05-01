@@ -11,6 +11,8 @@
 #include <pthread.h>
 #include <fcntl.h>
 #include <time.h>
+#include <stdbool.h>
+#include <ctype.h>
 
 #define MAX_THR 100000
 #define SIZE 256
@@ -18,6 +20,7 @@
 
 int i = 1;
 
+bool numStr(char* str);
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path);
 
 
