@@ -62,8 +62,6 @@ void *pedidos(void *arg)
     if(unlink(private_fifo) < 0)    //Destroys private FIFO
         printf("Error destroying Private FIFO\n");
 
-
-
 }
 
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
