@@ -11,8 +11,24 @@
 #include <pthread.h>
 
 #define MAX_FILE_NAME_LENGHT 1024
+#define MAX_THREADS 1000
 #define OK 0
 
+bool wc_open = true;
+
+typedef struct look_for_clients_args
+{
+	char FIFO_path[MAX_FILE_NAME_LENGHT];
+}look_for_clients_args;
+
+typedef struct process_client_args
+{
+	int i;
+	int pid;
+	int tid;
+	int dur;
+	int pl;
+}process_client_args;
 
 bool numStr(char* str);
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path);
