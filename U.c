@@ -2,7 +2,6 @@
 #include "utils.c"
 #include "U.h"
 
-
 void *pedidos(void *arg)
 {
     char *fifo = arg;
@@ -89,9 +88,13 @@ bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
 
 int main(int argc, char *argv[])
 {
-    double* nsecs;
-    char* fifo;
-    processArgs(argc, argv[], nsecs, fifo);
+    double nsecs;
+    char FIFO_path[1024];
+    if(!processArgs(argc, argv, &nsecs, FIFO_path))
+    {
+        fprintf(stderr,"Argument error\n");
+        return -1;
+    }
     char fifopath[SIZE]="tmp/";
     pthread_t threads[MAX_THR];
     int thr=0;
@@ -109,6 +112,7 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
 
 
 
