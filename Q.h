@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -15,6 +17,8 @@
 #define OK 0
 
 bool wc_open = true;
+int main_fifo_fd = -1;
+int places[MAX_THREADS] = {0};
 
 typedef struct look_for_clients_args
 {

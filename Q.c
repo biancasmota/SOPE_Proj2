@@ -107,19 +107,52 @@ void* process_client(void* arg)
 {
     int fd;
     char path[MAX_FILE_NAME_LENGHT];
+    
     process_client_args* args = (process_client_args*) arg;
-    sprintf(path,"/tmp/%d.%d",args->pid, args->tid);
-    do
+    
+    sprintf(path,"/tmp/%d.%d",args->pid,args->tid);
+    fd = open(path,O_WRONLY);
+
+    if(fd = -1)
     {
-        fd=open(path,O_WRONLY);
+        printf("%ld;%d ; %d ; %d ; %d ; %d ; GAVUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);        
+    }
+    else
+    {
+        char  message[MAX_FILE_NAME_LENGHT];
+        int messagelen;
         
-    }while(fd == -1);
+        if(!wc_open)
+        {
+            printf("%ld;%d ; %d ; %d ; -1 ; -1 ; 2LATE\n", time(NULL), args->i, args->pid, args->tid);
+            printf(message,"%d; %d; %d; -1; -1", args->i, args->pid, args->tid);
+            messagelen=strlen(message)+1;
+            write(fd,message,messagelen);
+        }
+        else
+        {
+
+            for(int i = 0; i < MAX_THREADS; i++)
+            {
+                if(places[i] == 0)
+                {
+                    args->pl = i;
+                    places[i] = 1;
+                }
+            }            
+            printf(message,"%d; %d; %d; %d; %d", args->i, args->pid, args->tid, args->dur, args->pl);
+            messagelen=strlen(message)+1;
+            write(fd,message,messagelen);
+            printf("%ld;%d ; %d ; %d ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
+            usleep(args->dur * 1000);
+            printf("%ld;%d ; %d ; %d ; %d ; %d ; TIMUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
+            places[args->pl] = 0;
+        }
+    }
     free(arg);
     close(fd);
     return NULL;
 }
-
-int main_fifo_fd = -1;
 
 void* look_for_clients(void* FIFO_path)
 {
@@ -128,23 +161,24 @@ void* look_for_clients(void* FIFO_path)
     char  str[100];
     mkfifo(FIFO_path,0660);
     main_fifo_fd=open((char*)FIFO_path,O_RDONLY);
-    while(readline(main_fifo_fd,str) && wc_open)
+    while(readline(main_fifo_fd,str))
     {
         process_client_args* args = new_ProcessClientArgs();
         if(!parse_client_args(args,str))
         {
             fprintf(stderr,"Communication error: bad args\n");
-        }
-        
-        if(pthread_create(&tid[curr_thread], NULL, process_client, args) != OK)
-        {
-            pthread_join(tid[curr_thread],NULL);
-            fprintf(stderr,"System max threads reached\n");
-            curr_thread++;
-            pthread_exit(NULL);
+        }    
+        else{
+            printf("%ld;%d ; %d ; %d ; %d ; %d ; RECVD\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
+            if(pthread_create(&tid[curr_thread], NULL, process_client, args) != OK)
+            {
+                pthread_join(tid[curr_thread],NULL);
+                fprintf(stderr,"System max threads reached\n");
+                curr_thread++;
+                pthread_exit(NULL);
+            }
         }
     }
-    printf("finished reading, wc_open = %d \n", wc_open);
     close(main_fifo_fd);
     return NULL;
 }
@@ -172,10 +206,10 @@ int main(int argc, char* argv[])
     }
     while (elapsed < nsecs);
     
+    wc_open = false;
     if(main_fifo_fd != -1)
         pthread_join(tid,NULL);
     
-    wc_open = false;
 
     remove(FIFO_path);
 
