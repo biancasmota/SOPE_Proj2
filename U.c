@@ -37,11 +37,34 @@ void *pedidos(void *arg){
 
 }
 
+bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
+{
+    if(argc != 4) return false;
+
+    for(int i = 1; i < argc; i++)
+    {
+        if(strcmp(argv[i],"-t") == 0)
+        {
+            if(numStr(argv[i+1]))
+            {
+                *nsecs = atoi(argv[i+1]);
+            }
+            else return false;
+            i++;
+        }
+        else
+        {
+            strcpy(FIFO_path,argv[i]);
+        }
+    }
+    return true;
+}
 
 int main(int argc, char *argv[])
 {
-    int nsecs = atoi(argv[2]);
-    char* fifo = argv[3];
+    double* nsecs;
+    char* fifo;
+    processArgs(argc, argv[], nsecs, fifo);
     char fifopath[SIZE]="tmp/";
     pthread_t threads[MAX_THR];
     int thr=0;
