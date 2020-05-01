@@ -1,7 +1,7 @@
 all: Q U
 
 program1:
-	gcc -Wall -ansi -pedantic -o Q Q.c
+	gcc  -o Q Q.c -lpthread -Wall -ansi -pedantic
 
 program2:
-	gcc -Wall -ansi -pedantic -o U U.c
+	gcc -o U U.c -pthread -Wall -ansi -pedantic 
