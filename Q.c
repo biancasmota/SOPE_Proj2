@@ -86,7 +86,7 @@ void* process_client(void* arg)
 
     if(fd == -1)
     {
-        printf("%ld;%d ; %d ; %ld ; %d ; %d ; GAVUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);        
+        printf("%ld ; %d ; %d ; %ld ; %d ; %d ; GAVUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);        
     }
     else
     {
@@ -95,7 +95,7 @@ void* process_client(void* arg)
         
         if(!wc_open)
         {
-            printf("%ld;%d ; %d ; %ld ; -1 ; -1 ; 2LATE\n", time(NULL), args->i, args->pid, args->tid);
+            printf("%ld ; %d ; %d ; %ld ; -1 ; -1 ; 2LATE\n", time(NULL), args->i, args->pid, args->tid);
             sprintf(message,"[ %d, %d, %ld, -1, -1 ]\n", args->i, args->pid, args->tid);
             messagelen=strlen(message)+1;
             write(fd,message,messagelen);
@@ -115,9 +115,9 @@ void* process_client(void* arg)
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, args->pid, args->tid, args->dur, args->pl);
             messagelen=strlen(message)+1;
             write(fd,message,messagelen);
-            printf("%ld;%d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
+            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
             usleep(args->dur * 1000);
-            printf("%ld;%d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
+            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
             places[args->pl] = 0;
         }
     }
@@ -141,7 +141,7 @@ void* look_for_clients(void* FIFO_path)
             fprintf(stderr,"Communication error: bad args\n");
         }    
         else{
-            printf("%ld;%d ; %d ; %ld ; %d ; %d ; RECVD\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
+            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; RECVD\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
             if(pthread_create(&tid[curr_thread], NULL, process_client, args) != OK)
             {
                 pthread_join(tid[curr_thread],NULL);
@@ -182,7 +182,6 @@ int main(int argc, char* argv[])
     if(main_fifo_fd != -1)
         pthread_join(tid,NULL);
     
-
     remove(FIFO_path);
 
 	return 0;
