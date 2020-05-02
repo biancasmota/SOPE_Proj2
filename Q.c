@@ -139,7 +139,7 @@ void* look_for_clients(void* FIFO_path)
 {
     pthread_t tid[MAX_THREADS];
     int curr_thread = 0;
-    char  str[100];
+    char  str[100000];
     mkfifo(FIFO_path,0660);
     main_fifo_fd=open((char*)FIFO_path,O_RDONLY);
     while(readline(main_fifo_fd,str))
