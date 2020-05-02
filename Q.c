@@ -70,7 +70,7 @@ process_client_args* new_ProcessClientArgs()
 
 bool parse_client_args(process_client_args* args, char* str)
 {
-    sscanf(str, "[ %d, %d, %ld, %d, %d ]\n", &args->i, &args->pid, &args->tid, &args->dur, &args->pl);
+    sscanf(str, "[ %d, %d, %ld, %d, %d ]", &args->i, &args->pid, &args->tid, &args->dur, &args->pl);
     return true;
 }
 
@@ -134,7 +134,8 @@ void* look_for_clients(void* FIFO_path)
     main_fifo_fd=open((char*)FIFO_path,O_RDONLY);
     while(readline(main_fifo_fd,str))
     {
-        process_client_args* args = new_ProcessClientArgs();
+        printf("----> %s\n", str);
+        /*process_client_args* args = new_ProcessClientArgs();
         if(!parse_client_args(args,str))
         {
             fprintf(stderr,"Communication error: bad args\n");
@@ -148,7 +149,7 @@ void* look_for_clients(void* FIFO_path)
                 curr_thread++;
                 pthread_exit(NULL);
             }
-        }
+        }*/
     }
     close(main_fifo_fd);
     return NULL;
@@ -159,6 +160,8 @@ int main(int argc, char* argv[])
 	double nsecs;
 	char FIFO_path[MAX_FILE_NAME_LENGHT];   
     pthread_t tid;
+    time_t start, end;
+    double elapsed;
 
 	if(!processArgs(argc, argv, &nsecs, FIFO_path))
 	{
@@ -167,8 +170,6 @@ int main(int argc, char* argv[])
 	}
 
     pthread_create(&tid, NULL, look_for_clients, FIFO_path);	
-    time_t start, end;
-    double elapsed;
     start = time(NULL);
     do
     {

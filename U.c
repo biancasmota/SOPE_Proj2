@@ -26,26 +26,25 @@ bool numStr(char* str)
 
 void *pedidos(void *arg)
 {
-    char *fifo = arg;
+    int fd = *(int*)arg;
     int pid = getpid();
     long int tid = pthread_self();
     char msg[SIZE];
-    int fd = open(fifo,O_WRONLY);
     int time = rand()% RAND + 1;
+    int messagelen;
 
     if (fd==-1)
     {
-        writeRegister(i,pid,tid,time,-1,CLOSD);
-        //printf("WC is closed\n");
+        //writeRegister(i,pid,tid,time,-1,CLOSD);
+        printf("WC is closed\n");
         return NULL;
     }
 
-
-    sprintf(msg, "[ %d, %d, %ld, %d, %d ]\n", i, pid, tid, time, -1);
-    if (write(fd, &msg, SIZE) < 0)
+    sprintf(msg, "[ %d, %d, %ld, %d, %d ]", i, pid, tid, time, -1);
+    messagelen=strlen(msg)+1;
+    if (write(fd, &msg, messagelen) < 0)
         return NULL;
-
-    close(fd);
+    return NULL;
 /*
     char private_fifo[SIZE]="tmp/";
     int fd_priv;
@@ -115,24 +114,29 @@ int main(int argc, char *argv[])
 {
     double nsecs;
     char fifo[1024];
+    //char fifopath[SIZE]="tmp/";
+    pthread_t threads[MAX_THR];
+    int thr = 0;
+    int fd = -1;
+    time_t start, end;
+    double elapsed;
+
     if(!processArgs(argc, argv, &nsecs, fifo))
     {
         fprintf(stderr,"Argument error\n");
         return -1;
     }
-    //char fifopath[SIZE]="tmp/";
-    pthread_t threads[MAX_THR];
-    int thr=0;
 
     //strcat(fifopath,fifo);
 
-    time_t start, end;
-    double elapsed;
     start = time(NULL);
     do
     {
         end = time(NULL);
-        pthread_create(&threads[thr],NULL,pedidos,fifo);
+
+        if(fd == -1)
+            fd=open(fifo,O_WRONLY);
+        pthread_create(&threads[thr],NULL,pedidos,&fd);
         //pthread_detach(threads[thr]);
         thr++;
         i++;
@@ -140,6 +144,7 @@ int main(int argc, char *argv[])
         elapsed = difftime(end, start);
     }
     while (elapsed < nsecs);
+    if(fd != -1) close(fd);
 
     return 0;
 }
