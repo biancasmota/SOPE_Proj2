@@ -78,15 +78,18 @@ void* process_client(void* arg)
 {
     int fd;
     char path[MAX_FILE_NAME_LENGHT];
+    long int tid = pthread_self();
     
     process_client_args* args = (process_client_args*) arg;
     
+    printf("%ld ; %d ; %d ; %ld ; %d ; %d ; RECVD\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl);
+
     sprintf(path,"/tmp/%d.%ld",args->pid,args->tid);
     fd = open(path,O_WRONLY);
 
     if(fd == -1)
     {
-        printf("%ld ; %d ; %d ; %ld ; %d ; %d ; GAVUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);        
+        printf("%ld ; %d ; %d ; %ld ; %d ; %d ; GAVUP\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl);        
     }
     else
     {
@@ -95,10 +98,11 @@ void* process_client(void* arg)
         
         if(!wc_open)
         {
-            printf("%ld ; %d ; %d ; %ld ; -1 ; -1 ; 2LATE\n", time(NULL), args->i, args->pid, args->tid);
-            sprintf(message,"[ %d, %d, %ld, -1, -1 ]\n", args->i, args->pid, args->tid);
+            printf("%ld ; %d ; %d ; %ld ; -1 ; -1 ; 2LATE\n", time(NULL), args->i, getpid(), tid);
+            sprintf(message,"[ %d, %d, %ld, -1, -1 ]\n", args->i, getpid(), tid);
             messagelen=strlen(message)+1;
-            write(fd,message,messagelen);
+            if(write(fd,message,messagelen) < 0)
+                fprintf(stderr, "Couldnt write to private fifo\n");
         }
         else
         {
@@ -112,16 +116,17 @@ void* process_client(void* arg)
                     break;
                 }
             }            
-            sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, args->pid, args->tid, args->dur, args->pl);
+            sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, getpid(), tid, args->dur, args->pl+1);
             messagelen=strlen(message)+1;
-            write(fd,message,messagelen);
-            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
+            if(write(fd,message,messagelen) < 0)
+                fprintf(stderr, "Couldnt write to private fifo\n");
+            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
             usleep(args->dur * 1000);
-            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
+            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
             places[args->pl] = 0;
         }
     }
-    free(arg);
+    free(args);
     close(fd);
     return NULL;
 }
@@ -141,14 +146,11 @@ void* look_for_clients(void* FIFO_path)
             fprintf(stderr,"Communication error: bad args\n");
         }    
         else{
-            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; RECVD\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
             if(pthread_create(&tid[curr_thread], NULL, process_client, args) != OK)
-            {
-                pthread_join(tid[curr_thread],NULL);
+            {   
                 fprintf(stderr,"System max threads reached\n");
-                curr_thread++;
-                pthread_exit(NULL);
             }
+            curr_thread++;
         }
     }
     close(main_fifo_fd);

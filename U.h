@@ -16,12 +16,12 @@
 
 #define MAX_THR 100000
 #define SIZE 256
-#define RAND 300
+#define RAND 3000
 
-int i = 1;
+int i = 0;
+bool wc_open = true;
 
 bool numStr(char* str);
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path);
-
 
 #endif //SOPE_PROJ2_U_H

@@ -32,19 +32,6 @@ void *pedidos(void *arg)
     char msg[SIZE];
     int time = rand()% RAND + 1;
     int messagelen;
-
-    if (fd==-1)
-    {
-        writeRegister(i,pid,tid,time,-1,CLOSD);
-        //printf("WC is closed\n");
-        return NULL;
-    }
-
-    sprintf(msg, "[ %d, %d, %ld, %d, %d ]", i, pid, tid, time, -1);
-    messagelen=strlen(msg)+1;
-    if (write(fd, &msg, messagelen) < 0)
-        return NULL;
-
     char private_fifo[SIZE]="/tmp/";
     int fd_priv;
     char temp[SIZE];
@@ -57,13 +44,23 @@ void *pedidos(void *arg)
     sprintf(temp,"%ld",tid);
     strcat(private_fifo,temp);
 
+    if (fd==-1)
+    {
+        writeRegister(i,pid,tid,time,-1,CLOSD);
+        //printf("WC is closed\n");
+        return NULL;
+    }
+
     if (mkfifo(private_fifo, 0660) != 0) //create private FIFO
     {
-        writeRegister(i, pid, tid, time, -1, FAILD);
         printf("Error creating private FIFO\n");
         return NULL;
     }
 
+    sprintf(msg, "[ %d, %d, %ld, %d, %d ]", i, pid, tid, time, -1);
+    messagelen=strlen(msg)+1;
+    if (write(fd, &msg, messagelen) < 0)
+        return NULL;
 
     if ((fd_priv = open(private_fifo, O_RDONLY)) < 0) //open private FIFO
     {
@@ -72,10 +69,15 @@ void *pedidos(void *arg)
     }
 
     if (read(fd_priv, &msg, SIZE) > 0) //read private FIFO
-        sscanf(msg, "[ %d, %d, %ld, %d, %d ]\n", &id, &s_pid, &s_tid, &dur, &pl);
+        sscanf(msg, "[ %d, %d, %ld, %d, %d ]", &id, &s_pid, &s_tid, &dur, &pl);
+    else
+        writeRegister(i, pid, tid, dur, pl, FAILD);   
 
     if (pl == -1 && dur == -1) //closing
+    {
         writeRegister(i, pid, tid, dur, pl, CLOSD);
+        wc_open = false;
+    }
     else    //open
         writeRegister(i, pid, tid, dur, pl, IAMIN);
 
@@ -133,14 +135,18 @@ int main(int argc, char *argv[])
 
         if(fd == -1)
             fd=open(fifo,O_WRONLY);
-        pthread_create(&threads[thr],NULL,pedidos,&fd);
-        //pthread_detach(threads[thr]);
+        if(pthread_create(&threads[thr],NULL,pedidos,&fd) != 0)
+        {
+            fprintf(stderr, "System max threads reached\n");
+            continue;
+        }
+        pthread_join(threads[thr],NULL);
         thr++;
         i++;
-        usleep(100 * 1000);
+        usleep(10 * 1000);
         elapsed = difftime(end, start);
     }
-    while (elapsed < nsecs);
+    while (elapsed < nsecs && wc_open);
     if(fd != -1) close(fd);
 
     return 0;
