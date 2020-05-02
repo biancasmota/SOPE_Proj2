@@ -14,12 +14,12 @@ Consideramos que o quarto de banho abre quando o programa Q é chamado, e fecha 
 
 Os clientes vão tentar entrar a partir do monto da execução do programa, ou se quando o programa começar o quarto de banho estiver fechado, no momento que abrir. E ficará fazendo novos pedidos a cada 10 milisegundos a partir de então, até que ou o banheiro feche ou o tempo *nsecs*, que se conta desde o momento do inicio da execução, acabe;
 
-* U
+* [U](/U.c)
 
 
 	A **main** processa os argumentos da linha de comando através de **processArgs**, começa contar o tempo e chamar uma nova thread da função **pedidos** que tratará dos pedidos para entrar no quarto de banho, a comunicação com o servidor.
 	
-* Q
+* [Q](/Q.c)
 
 	A **main** processa os argumentos da linha de comando através de **processArgs**, começa a contar o tempo e chama **look_for_clients** para ficar olhando o fifo verificando o canal público de comunicação com o cliente, tarefa que é feita em uma thread separada, para não impedir a contagem do tempo enquanto se aguarda a conexão do cliente.
 	
