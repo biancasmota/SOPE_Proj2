@@ -1,37 +1,26 @@
-#SOPE PROJ 2
+# SOPE PROJ 2
 
-##2º proj SOPE -Bianca Mota, Carolina Rosemback e Iohan Sardinha
-
-O projeto foi criado seguindo as regras do enunciado. Decidimos seguir essas etapas para que tivessemos uma melhor percepção do funcionamento do programa.
-
-###Cliente U:
-* Precessar os argumentos
-
-* Loop de nsecs
-	* Criar nova [Thread U]
-	* aguardar X milisegundos
-* Fechar FIFOs privadas que ainda estejam abertos
-
-#####[Thread U]:
-* Criar tempo de utilzação = Random
-* Avisar que foi criada no FIFO
-* Criar um FIFO privado 'tmp/...'
-* Fazer requisição de entrada
-* Loop enquanto a resposta não for negativa
-	* Se a resposta for positiva -> aguardar tempo de utilização
-		fechar canal privado
-
-###Servidor Q:
-* Precessar os args
-* Loop de nsecs
-	* Verifica o FIFO para ver se há um novo cliente
-	* Cria nova [Thread Q]
-* Fecha FIFOs privadas que ainda estejam abertos
-
-#####[Thread Q]:
-* Acessa o FIFO privado do cliente
-* Deixa-o entrar
-* Fecha o fifo privado do cliente
+## 2º proj SOPE -Bianca Mota, Carolina Rosemback e Iohan Sardinha
 
 
-Tivemos dúvidas porém na interpretação do enunciado, não percebemos se o tempo nsecs deveria começar a contar a partir do instante em que era chamado ou só a partir do momento em que o programa U se comunicava com o programa Q. Optamos por fazer com o nsecs contando a partir do momento em que é chamado.
+O enunciado não deixava claro se o tempo de execução aproximado dos programas passado por *nsecs* é contato a partir do momento que há comuniação entre cliente e servidor ou se desde o momento que o código é executado.
+
+
+Optamos por fazer com que este tempo seja contado desde o momento que o programa é executado, assim quando um dos programas é chamado ele aguarda a comunicação com o outro, se esta comunicação não acontecer dentro de *nsces* o programa fecha. 
+
+
+Consideramos que o quarto de banho abre quando o programa Q é chamado, e fecha depois de *nsecs* segundos para entrada de novos clientes.
+
+
+Os clientes vão tentar entrar a partir do monto da execução do programa, ou se quando o programa começar o quarto de banho estiver fechado, no momento que abrir. E ficará fazendo novos pedidos a cada 10 milisegundos a partir de então, até que ou o banheiro feche ou o tempo *nsecs*, que se conta desde o momento do inicio da execução, acabe;
+
+* U
+
+
+	A **main** processa os argumentos da linha de comando através de **processArgs**, começa contar o tempo e chamar uma nova thread da função **pedidos** que tratará dos pedidos para entrar no quarto de banho, a comunicação com o servidor.
+	
+* Q
+
+	A **main** processa os argumentos da linha de comando através de **processArgs**, começa a contar o tempo e chama **look_for_clients** para ficar olhando o fifo verificando o canal público de comunicação com o cliente, tarefa que é feita em uma thread separada, para não impedir a contagem do tempo enquanto se aguarda a conexão do cliente.
+	
+	Quando **look_for_clients** detecta uma comunicação do cliente chama **process_client** que tratará o pedido do cliente, e comunicará com o cliente
