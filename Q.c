@@ -109,12 +109,13 @@ void* process_client(void* arg)
                 {
                     args->pl = i;
                     places[i] = 1;
+                    break;
                 }
             }            
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, args->pid, args->tid, args->dur, args->pl);
             messagelen=strlen(message)+1;
             write(fd,message,messagelen);
-            printf("%ld;%d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);
+            printf("%ld;%d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
             usleep(args->dur * 1000);
             printf("%ld;%d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl+1);
             places[args->pl] = 0;
