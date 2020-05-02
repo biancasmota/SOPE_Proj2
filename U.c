@@ -1,6 +1,9 @@
-#include "utils.h"
-#include "utils.c"
 #include "U.h"
+
+void writeRegister(int i, int pid, long tid, int dur, int pl, char *oper) {
+    printf("%ld ; %d ; %d ; %ld ; %d ; %d ; %s\n", time(NULL), i, pid, tid, dur, pl, oper);
+    fflush(stdout);
+}
 
 bool numStr(char* str)
 {
@@ -36,7 +39,7 @@ void *pedidos(void *arg)
     if (fd==-1)
     {
         writeRegister(i,pid,tid,time,-1,CLOSD);
-        //printf("WC is closed\n");
+        //fprintf(stderr, "WC is closed\n");
         return NULL;
     }
 
@@ -60,14 +63,13 @@ void *pedidos(void *arg)
     if (mkfifo(private_fifo, 0660) != 0) //create private FIFO
     {
         writeRegister(i, pid, tid, time, -1, FAILD);
-        printf("Error creating private FIFO\n");
+        fprintf(stderr, "Error creating private FIFO\n");
         return NULL;
     }
 
-
     if ((fd_priv = open(private_fifo, O_RDONLY)) < 0) //open private FIFO
     {
-        printf("Error opening private FIFO");
+        fprintf(stderr, "Error opening private FIFO");
         return NULL;
     }
 
@@ -81,7 +83,7 @@ void *pedidos(void *arg)
 
     close(fd_priv);
     if(unlink(private_fifo) < 0)    //Destroys private FIFO
-        printf("Error destroying Private FIFO\n");
+        fprintf(stderr, "Error destroying Private FIFO\n");
 }
 
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
