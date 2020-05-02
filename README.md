@@ -3,7 +3,7 @@
 ## 2º proj SOPE - Bianca Mota, Carolina Rosemback e Iohan Sardinha
 
 
-O enunciado não deixava claro se o tempo de execução aproximado dos programas passado por *nsecs* é contato a partir do momento que há comuniação entre cliente e servidor ou se desde o momento que o código é executado.
+O enunciado não deixava claro se o tempo de execução aproximado dos programas passado por *nsecs* é contado a partir do momento que há comuniação entre cliente e servidor ou se desde o momento que o código é executado.
 
 
 Optamos por fazer com que este tempo seja contado desde o momento que o programa é executado, assim quando um dos programas é chamado ele aguarda a comunicação com o outro, se esta comunicação não acontecer dentro de *nsces* o programa fecha. 
