@@ -35,8 +35,8 @@ void *pedidos(void *arg)
 
     if (fd==-1)
     {
-        //writeRegister(i,pid,tid,time,-1,CLOSD);
-        printf("WC is closed\n");
+        writeRegister(i,pid,tid,time,-1,CLOSD);
+        //printf("WC is closed\n");
         return NULL;
     }
 
@@ -44,9 +44,8 @@ void *pedidos(void *arg)
     messagelen=strlen(msg)+1;
     if (write(fd, &msg, messagelen) < 0)
         return NULL;
-    return NULL;
-/*
-    char private_fifo[SIZE]="tmp/";
+
+    char private_fifo[SIZE]="/tmp/";
     int fd_priv;
     char temp[SIZE];
     int id, s_pid, pl, dur, fd_private; //WC
@@ -58,14 +57,13 @@ void *pedidos(void *arg)
     sprintf(temp,"%ld",tid);
     strcat(private_fifo,temp);
 
-    printf("%s\n", private_fifo);
-
     if (mkfifo(private_fifo, 0660) != 0) //create private FIFO
     {
         writeRegister(i, pid, tid, time, -1, FAILD);
         printf("Error creating private FIFO\n");
         return NULL;
     }
+
 
     if ((fd_priv = open(private_fifo, O_RDONLY)) < 0) //open private FIFO
     {
@@ -84,7 +82,6 @@ void *pedidos(void *arg)
     close(fd_priv);
     if(unlink(private_fifo) < 0)    //Destroys private FIFO
         printf("Error destroying Private FIFO\n");
-*/
 }
 
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)

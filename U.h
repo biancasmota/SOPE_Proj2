@@ -16,7 +16,7 @@
 
 #define MAX_THR 100000
 #define SIZE 256
-#define RAND 30
+#define RAND 300
 
 int i = 1;
 

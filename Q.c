@@ -84,7 +84,7 @@ void* process_client(void* arg)
     sprintf(path,"/tmp/%d.%ld",args->pid,args->tid);
     fd = open(path,O_WRONLY);
 
-    if(fd = -1)
+    if(fd == -1)
     {
         printf("%ld;%d ; %d ; %ld ; %d ; %d ; GAVUP\n", time(NULL), args->i, args->pid, args->tid, args->dur, args->pl);        
     }
@@ -134,8 +134,7 @@ void* look_for_clients(void* FIFO_path)
     main_fifo_fd=open((char*)FIFO_path,O_RDONLY);
     while(readline(main_fifo_fd,str))
     {
-        printf("----> %s\n", str);
-        /*process_client_args* args = new_ProcessClientArgs();
+        process_client_args* args = new_ProcessClientArgs();
         if(!parse_client_args(args,str))
         {
             fprintf(stderr,"Communication error: bad args\n");
@@ -149,7 +148,7 @@ void* look_for_clients(void* FIFO_path)
                 curr_thread++;
                 pthread_exit(NULL);
             }
-        }*/
+        }
     }
     close(main_fifo_fd);
     return NULL;
