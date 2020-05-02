@@ -18,6 +18,16 @@
 #define SIZE 256
 #define RAND 3000
 
+#define IWANT "IWANT"
+#define RECVD "RECVD"
+#define ENTER "ENTER"
+#define IAMIN "IAMIN"
+#define TIMUP "TIMUP"
+#define TOLATE "2LATE"
+#define CLOSD "CLOSD"
+#define FAILD "FAILD"
+#define GAVUP "GAVUP"
+
 int i = 0;
 bool wc_open = true;
 
