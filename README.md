@@ -1,6 +1,6 @@
 # SOPE PROJ 2
 
-## 2º proj SOPE -Bianca Mota, Carolina Rosemback e Iohan Sardinha
+## 2º proj SOPE - Bianca Mota, Carolina Rosemback e Iohan Sardinha
 
 
 O enunciado não deixava claro se o tempo de execução aproximado dos programas passado por *nsecs* é contato a partir do momento que há comuniação entre cliente e servidor ou se desde o momento que o código é executado.
