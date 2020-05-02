@@ -13,14 +13,18 @@ bool numStr(char* str)
     for(int i = 0; str[i] != '\0'; i++)
     {
         if(!started && str[i] != ' ')
+        {
             if(!isdigit(str[i]) && str[i] != '-') return false;
             else{started = true; first = i;}
+        }
         if(started)
         {
             if(i == first && (!isdigit(str[i]) && str[i] != '-')) return false;
             if(i != first && !isdigit(str[i]))
+            {
                 if(str[i] == ' ') finished = true;
                 else return false;
+            }
             if(finished && str[i] != ' ') return false;
         }
     }
@@ -38,7 +42,7 @@ void *pedidos(void *arg)
     char private_fifo[SIZE]="/tmp/";
     int fd_priv;
     char temp[SIZE];
-    int id, s_pid, pl, dur, fd_private; //WC
+    int id, s_pid, pl, dur; //WC
     long s_tid;
 
     sprintf(temp,"%d",pid);
@@ -49,7 +53,7 @@ void *pedidos(void *arg)
 
     if (fd==-1)
     {
-        writeRegister(i,pid,tid,time,-1,CLOSD);
+        writeRegister(i,pid,tid,time,-1,FAILD);
         //printf("WC is closed\n");
         return NULL;
     }
@@ -87,6 +91,7 @@ void *pedidos(void *arg)
     close(fd_priv);
     if(unlink(private_fifo) < 0)    //Destroys private FIFO
         fprintf(stderr, "Error destroying Private FIFO\n");
+    return NULL;
 }
 
 bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)

@@ -8,14 +8,18 @@ bool numStr(char* str)
     for(int i = 0; str[i] != '\0'; i++)
     {
         if(!started && str[i] != ' ')
+        {
             if(!isdigit(str[i]) && str[i] != '-') return false;
             else{started = true; first = i;}
+        }
         if(started)
         {
             if(i == first && (!isdigit(str[i]) && str[i] != '-')) return false;
             if(i != first && !isdigit(str[i]))
+            {
                 if(str[i] == ' ') finished = true;
                 else return false;
+            }
             if(finished && str[i] != ' ') return false;
         }
     }
