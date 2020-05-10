@@ -51,6 +51,8 @@ void *pedidos(void *arg)
     sprintf(temp,"%ld",tid);
     strcat(private_fifo,temp);
 
+    writeRegister(i,pid,tid,time,-1,IWANT);
+
     if (fd==-1)
     {
         writeRegister(i,pid,tid,time,-1,FAILD);
