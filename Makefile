@@ -20,4 +20,6 @@ Q: $(OBJ)
 
 clean:
 	@rm -f *.o $(TARGETS)
+	@rm -f *.log $(TARGETS)
+	@rm -f *.err $(TARGETS)
 

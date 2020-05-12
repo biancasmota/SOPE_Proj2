@@ -51,7 +51,6 @@ void *pedidos(void *arg)
     sprintf(temp,"%ld",tid);
     strcat(private_fifo,temp);
 
-    writeRegister(i,pid,tid,time,-1,IWANT);
 
     if (fd==-1)
     {
@@ -60,6 +59,8 @@ void *pedidos(void *arg)
         return NULL;
     }
 
+    writeRegister(i,pid,tid,time,-1,IWANT); 
+    
     if (mkfifo(private_fifo, 0660) != 0) //create private FIFO
     {
         fprintf(stderr,"Error creating private FIFO\n");
@@ -77,18 +78,20 @@ void *pedidos(void *arg)
         return NULL;
     }
 
-    if (read(fd_priv, &msg, SIZE) > 0) //read private FIFO
-        sscanf(msg, "[ %d, %d, %ld, %d, %d ]", &id, &s_pid, &s_tid, &dur, &pl);
-    else
-        writeRegister(i, pid, tid, dur, pl, FAILD);   
-
-    if (pl == -1 && dur == -1) //closing
+    if (read(fd_priv, &msg, SIZE) <= 0)
+        writeRegister(i, pid, tid, dur, pl, FAILD);
+    else //read private FIFO
     {
-        writeRegister(i, pid, tid, dur, pl, CLOSD);
-        wc_open = false;
+        sscanf(msg, "[ %d, %d, %ld, %d, %d ]", &id, &s_pid, &s_tid, &dur, &pl);
+
+        if (pl == -1 && dur == -1) //closing
+        {
+            writeRegister(i, pid, tid, dur, pl, CLOSD);
+            wc_open = false;
+        }
+        else//open
+            writeRegister(i, pid, tid, dur, pl, IAMIN);
     }
-    else    //open
-        writeRegister(i, pid, tid, dur, pl, IAMIN);
 
     close(fd_priv);
     if(unlink(private_fifo) < 0)    //Destroys private FIFO

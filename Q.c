@@ -83,7 +83,7 @@ void* process_client(void* arg)
     int fd;
     char path[MAX_FILE_NAME_LENGHT];
     long int tid = pthread_self();
-    
+
     process_client_args* args = (process_client_args*) arg;
     
     printf("%ld ; %d ; %d ; %ld ; %d ; %d ; RECVD\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl);
