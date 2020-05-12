@@ -1,2 +1,2 @@
-sh compile.sh;
+sh run.sh;
 sh aval.sh;
