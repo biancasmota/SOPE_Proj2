@@ -13,7 +13,7 @@
 #include <pthread.h>
 
 #define MAX_FILE_NAME_LENGHT 1024
-#define MAX_THREADS 1000
+#define MAX_THREADS 100000
 #define OK 0
 
 bool wc_open = true;
