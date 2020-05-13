@@ -153,8 +153,14 @@ void* look_for_clients(void* FIFO_path)
             if(pthread_create(&tid[curr_thread], NULL, process_client, args) != OK)
             {   
                 fprintf(stderr,"System max threads reached\n");
+                break;
             }
             curr_thread++;
+            if(curr_thread > MAX_THREADS)
+            {
+                fprintf(stderr,"Max threads reached\n");
+                break;
+            }
         }
     }
     close(main_fifo_fd);

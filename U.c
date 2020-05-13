@@ -54,7 +54,6 @@ void *pedidos(void *arg)
 
     if (fd==-1)
     {
-        writeRegister(i,pid,tid,time,-1,FAILD);
         //printf("WC is closed\n");
         return NULL;
     }
@@ -153,10 +152,9 @@ int main(int argc, char *argv[])
             fprintf(stderr, "System max threads reached\n");
             continue;
         }
-        pthread_join(threads[thr],NULL);
+        usleep(10 * 1000);
         thr++;
         i++;
-        usleep(10 * 1000);
         elapsed = difftime(end, start);
     }
     while (elapsed < nsecs && wc_open);
