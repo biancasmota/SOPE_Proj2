@@ -26,9 +26,10 @@ bool numStr(char* str)
     return started;
 }
 
-bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
+bool processArgs(int argc, char* argv[], double* nsecs, int* nplaces, int* nthreads, char* FIFO_path)
 {
-	if(argc != 4) return false;
+	if(argc> 8 || argc<4) 
+        return false;
 
 	for(int i = 1; i < argc; i++)
 	{
@@ -38,13 +39,36 @@ bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path)
             {
                 *nsecs = atoi(argv[i+1]);
             }
-            else return false;
+            else
+                return false;
             i++;
         }
-        else
+
+        else if(strcmp(argv[i], "-l") == 0)
         {
-        	strcpy(FIFO_path,argv[i]);
+            if(numStr(argv[i+1]))
+            {
+                *nplaces = atoi(argv[i+1]);
+            }
+            else
+                return false;
+            i++;
         }
+        else if(strcmp(argv[i], "-n") == 0)
+        {
+            if(numStr(argv[i+1]))
+            {
+                *nthreads = atoi(argv[i+1]);
+            }
+            else
+                return false;
+            i++;
+        }
+        else 
+        {
+           strcpy(FIFO_path,argv[i]);
+        }
+
 	}
 	return true;
 }
@@ -170,12 +194,13 @@ void* look_for_clients(void* FIFO_path)
 int main(int argc, char* argv[])
 {
 	double nsecs;
+    int nplaces, nthreads;
 	char FIFO_path[MAX_FILE_NAME_LENGHT];   
     pthread_t tid;
     time_t start, end;
     double elapsed;
 
-	if(!processArgs(argc, argv, &nsecs, FIFO_path))
+	if(!processArgs(argc, argv, &nsecs, &nplaces, &nthreads, FIFO_path))
 	{
 		fprintf(stderr,"Argument error\n");
 		return -1;

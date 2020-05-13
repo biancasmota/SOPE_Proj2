@@ -30,7 +30,7 @@ typedef struct process_client_args
 }process_client_args;
 
 bool numStr(char* str);
-bool processArgs(int argc, char* argv[], double* nsecs, char* FIFO_path);
+bool processArgs(int argc, char* argv[], double* nsecs, int* nplaces, int*nthreads, char* FIFO_path);
 int readline(int fd, char *str);
 process_client_args* new_ProcessClientArgs();
 bool parse_client_args(process_client_args* args, char* str);
