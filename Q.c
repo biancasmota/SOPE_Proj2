@@ -159,13 +159,15 @@ void* process_client(void* arg)
     return NULL;
 }
 
-void* look_for_clients(void* FIFO_path)
+void* look_for_clients(void* arg)
 {
+    look_for_clients_args* args = (look_for_clients_args*) arg;
+
     pthread_t tid[MAX_THREADS];
     int curr_thread = 0;
     char  str[100000];
-    mkfifo(FIFO_path,0660);
-    main_fifo_fd=open((char*)FIFO_path,O_RDONLY);
+    mkfifo(args->FIFO_path,0660);
+    main_fifo_fd=open((char*)args->FIFO_path,O_RDONLY);
     while(readline(main_fifo_fd,str))
     {
         process_client_args* args = new_ProcessClientArgs();
@@ -179,6 +181,7 @@ void* look_for_clients(void* FIFO_path)
                 fprintf(stderr,"System max threads reached\n");
                 break;
             }
+//            pthread_join(tid[curr_thread],NULL);
             curr_thread++;
             if(curr_thread > MAX_THREADS)
             {
@@ -186,6 +189,10 @@ void* look_for_clients(void* FIFO_path)
                 break;
             }
         }
+    }
+    for(int i = 0; i < curr_thread; i++)
+    {
+        pthread_join(tid[i],NULL);
     }
     close(main_fifo_fd);
     return NULL;
@@ -206,7 +213,13 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-    pthread_create(&tid, NULL, look_for_clients, FIFO_path);	
+    look_for_clients_args* args;
+    args = malloc(sizeof(look_for_clients_args));
+    args->nplaces = nplaces;
+    args->nthreads = nthreads;
+    strcpy(args->FIFO_path, FIFO_path);
+
+    pthread_create(&tid, NULL, look_for_clients, args);	
     start = time(NULL);
     do
     {

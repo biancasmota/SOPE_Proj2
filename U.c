@@ -73,7 +73,7 @@ void *pedidos(void *arg)
 
     if ((fd_priv = open(private_fifo, O_RDONLY)) < 0) //open private FIFO
     {
-        fprintf(stderr, "Error opening private FIFO");
+        fprintf(stderr, "Error opening private FIFO\n");
         return NULL;
     }
 
@@ -158,6 +158,12 @@ int main(int argc, char *argv[])
         elapsed = difftime(end, start);
     }
     while (elapsed < nsecs && wc_open);
+
+    for(int i = 0; i < thr; i++)
+    {
+        pthread_join(threads[i],NULL);
+    }
+
     if(fd != -1) close(fd);
 
     return 0;

@@ -29,6 +29,13 @@ typedef struct process_client_args
 	int pl;
 }process_client_args;
 
+typedef struct look_for_clients_args
+{
+	int nplaces;
+	int nthreads;
+	char FIFO_path[MAX_FILE_NAME_LENGHT];
+}look_for_clients_args;
+
 bool numStr(char* str);
 bool processArgs(int argc, char* argv[], double* nsecs, int* nplaces, int*nthreads, char* FIFO_path);
 int readline(int fd, char *str);
