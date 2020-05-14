@@ -18,7 +18,8 @@
 
 bool wc_open = true;
 int main_fifo_fd = -1;
-int places[MAX_THREADS] = {0};
+int* places;
+int line[MAX_THREADS] = {0};
 
 typedef struct process_client_args
 {
@@ -27,6 +28,7 @@ typedef struct process_client_args
 	long tid;
 	int dur;
 	int pl;
+	int nPlaces;
 }process_client_args;
 
 typedef struct look_for_clients_args

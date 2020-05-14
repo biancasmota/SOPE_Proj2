@@ -93,6 +93,7 @@ process_client_args* new_ProcessClientArgs()
     args->tid = -1;
     args->dur = -1;
     args->pl = -1;
+    args->nPlaces = -1;
     return args;
 }
 
@@ -134,16 +135,17 @@ void* process_client(void* arg)
         }
         else
         {
-
-            for(int i = 0; i < MAX_THREADS; i++)
+            //bool has_room = false;
+            for(int i = 0; i < args->nPlaces; i++)
             {
                 if(places[i] == 0)
                 {
                     args->pl = i;
                     places[i] = 1;
+                    //has_room = true;
                     break;
                 }
-            }            
+            }
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, getpid(), tid, args->dur, args->pl+1);
             messagelen=strlen(message)+1;
             if(write(fd,message,messagelen) < 0)
@@ -161,16 +163,23 @@ void* process_client(void* arg)
 
 void* look_for_clients(void* arg)
 {
-    look_for_clients_args* args = (look_for_clients_args*) arg;
-
+    look_for_clients_args* this_args = (look_for_clients_args*) arg;
     pthread_t tid[MAX_THREADS];
     int curr_thread = 0;
     char  str[100000];
-    mkfifo(args->FIFO_path,0660);
-    main_fifo_fd=open((char*)args->FIFO_path,O_RDONLY);
+    mkfifo(this_args->FIFO_path,0660);
+    main_fifo_fd=open((char*)this_args->FIFO_path,O_RDONLY);
+
+    places = malloc(sizeof(int)*this_args->nplaces);
+    for(int i = 0; i < this_args->nplaces; i++)
+    {
+        places[i] = 0;
+    }
+
     while(readline(main_fifo_fd,str))
     {
         process_client_args* args = new_ProcessClientArgs();
+        args->nPlaces = this_args->nplaces;
         if(!parse_client_args(args,str))
         {
             fprintf(stderr,"Communication error: bad args\n");
@@ -181,7 +190,6 @@ void* look_for_clients(void* arg)
                 fprintf(stderr,"System max threads reached\n");
                 break;
             }
-//            pthread_join(tid[curr_thread],NULL);
             curr_thread++;
             if(curr_thread > MAX_THREADS)
             {
@@ -195,6 +203,7 @@ void* look_for_clients(void* arg)
         pthread_join(tid[i],NULL);
     }
     close(main_fifo_fd);
+    free(this_args);
     return NULL;
 }
 
