@@ -1,5 +1,6 @@
 #pragma once
 
+#include "queue.h"
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -20,6 +21,7 @@ bool wc_open = true;
 int main_fifo_fd = -1;
 int* places;
 int line[MAX_THREADS] = {0};
+node_t* wc_queue = NULL;
 
 typedef struct process_client_args
 {
