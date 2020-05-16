@@ -138,24 +138,25 @@ void* process_client(void* arg)
         else
         {
             //pthread_mutex_lock(&mutex);
-            //bool has_room = false;
-            //while(!has_room)
-            //{
-            for(int i = 0; i < args->nPlaces; i++)
+            bool has_room = false;
+            sem_wait(&sem);
+            while(!has_room)
             {
-                if(places[i] == 0)
+                for(int i = 0; i < args->nPlaces; i++)
                 {
-                    args->pl = i;
-                    places[i] = 1;
-                    //has_room = true;
-                    sem_wait(&sem);
-                    break;
+                    if(places[i] == 0)
+                    {
+                        args->pl = i;
+                        places[i] = 1;
+                        has_room = true;
+                        sem_post(&sem);
+                        break;
+                    }
                 }
             }
-            //}
             //pthread_mutex_unlock(&mutex);
-            //if(!has_room) 
-                //args->pl = -3;
+            if(!has_room) 
+                args->pl = -3;
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, getpid(), tid, args->dur, args->pl+1);
             messagelen=strlen(message)+1;
             if(write(fd,message,messagelen) < 0)
@@ -186,7 +187,7 @@ void* look_for_clients(void* arg)
         return NULL;
     }
 
-    places = malloc(sizeof(int)*this_args->nplaces);
+    places = malloc(sizeof(int)*(this_args->nplaces));
     sem_init(&sem, 0, this_args->nplaces);
     for(int i = 0; i < this_args->nplaces; i++)
     {
