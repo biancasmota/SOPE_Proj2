@@ -24,9 +24,7 @@ Os clientes vão tentar entrar a partir do monto da execução do programa, ou s
 	A **main** processa os argumentos da linha de comando através de **processArgs**, começa a contar o tempo e chama **look_for_clients** para ficar olhando o fifo verificando o canal público de comunicação com o cliente, tarefa que é feita em uma thread separada, para não impedir a contagem do tempo enquanto se aguarda a conexão do cliente.
 	
 	Quando **look_for_clients** detecta uma comunicação do cliente chama **process_client** que tratará o pedido do cliente, e comunicará com o cliente
+	
+	Quando o numero de threads é limitado se um pedido é feito mas não há threads para processá-lo ele só será atendido quando houver uma thread disponível, se quando isso acontecer o banheiro ja tiver fechado então ele não poderá entrar, receberá 2LATE, pois o servidor não teve condições de atendê-lo a tempo
 
-
-**OBS:
-Quando o numero de threads é limitado alguns pedidos do cliente são feitos mas não há threads disponíveis,
-quando elas estão disponíveis por vezes o banheiro já fechou, e elas recebem a resposta que o banheiro está fechado, mesmo
-que o pedido tenha sido feito com ele aberto**
+	Quando um cliente tenta entrar na casa de banho e ela está cheia ele irá aguardar, porque ele já foi atendido por uma thread, a partir do momento que é atendido por uma thread ele entratá na casa de banho, mesmo se ela fechar enquanto ele está na fila, ela fechará para novos clientes

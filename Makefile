@@ -9,14 +9,14 @@ all: U Q
 	echo $@
 
 U: $(OBJ)
-	rm -f $@1.o
-	$(CC) -o $@1 $@.c $(OBJ) $(CFLAGS)
-	echo Created $@1
+	rm -f $@2.o
+	$(CC) -o $@2 $@.c $(OBJ) $(CFLAGS)
+	echo Created $@2
 
 Q: $(OBJ)
-	rm -f $@1.o
-	$(CC) -o $@1 $@.c $(OBJ) $(CFLAGS)
-	echo Created $@1
+	rm -f $@2.o
+	$(CC) -o $@2 $@.c $(OBJ) $(CFLAGS)
+	echo Created $@2
 
 clean:
 	rm -f *.o $(TARGETS)
