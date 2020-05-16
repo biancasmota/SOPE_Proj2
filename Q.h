@@ -11,6 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #define MAX_FILE_NAME_LENGHT 1024
 #define MAX_THREADS 100000
@@ -21,7 +22,9 @@ int main_fifo_fd = -1;
 int* places;
 int line[MAX_THREADS] = {0};
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+//static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+sem_t sem; 
 
 typedef struct process_client_args
 {

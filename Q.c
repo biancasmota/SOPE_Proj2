@@ -137,24 +137,25 @@ void* process_client(void* arg)
         }
         else
         {
-            pthread_mutex_lock(&mutex);
-            bool has_room = false;
-            while(!has_room)
+            //pthread_mutex_lock(&mutex);
+            //bool has_room = false;
+            //while(!has_room)
+            //{
+            for(int i = 0; i < args->nPlaces; i++)
             {
-                for(int i = 0; i < args->nPlaces; i++)
+                if(places[i] == 0)
                 {
-                    if(places[i] == 0)
-                    {
-                        args->pl = i;
-                        places[i] = 1;
-                        has_room = true;
-                        break;
-                    }
+                    args->pl = i;
+                    places[i] = 1;
+                    //has_room = true;
+                    sem_wait(&sem);
+                    break;
                 }
             }
-            pthread_mutex_unlock(&mutex);
-            if(!has_room) 
-                args->pl = -3;
+            //}
+            //pthread_mutex_unlock(&mutex);
+            //if(!has_room) 
+                //args->pl = -3;
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, getpid(), tid, args->dur, args->pl+1);
             messagelen=strlen(message)+1;
             if(write(fd,message,messagelen) < 0)
@@ -163,6 +164,7 @@ void* process_client(void* arg)
             usleep(args->dur * 1000);
             printf("%ld ; %d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
             places[args->pl] = 0;
+            sem_post(&sem);
         }
     }
     free(args);
@@ -185,6 +187,7 @@ void* look_for_clients(void* arg)
     }
 
     places = malloc(sizeof(int)*this_args->nplaces);
+    sem_init(&sem, 0, this_args->nplaces);
     for(int i = 0; i < this_args->nplaces; i++)
     {
         places[i] = 0;
