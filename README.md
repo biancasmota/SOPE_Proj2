@@ -27,9 +27,6 @@ Os clientes vão tentar entrar a partir do monto da execução do programa, ou s
 
 
 **OBS:
-O programa só funciona para tempos pequenos no nsces**
-
-
-**Quando o numero de threads é limitado alguns pedidos do cliente são feitos mas não há threads disponíveis,
+Quando o numero de threads é limitado alguns pedidos do cliente são feitos mas não há threads disponíveis,
 quando elas estão disponíveis por vezes o banheiro já fechou, e elas recebem a resposta que o banheiro está fechado, mesmo
 que o pedido tenha sido feito com ele aberto**
