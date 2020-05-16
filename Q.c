@@ -143,7 +143,6 @@ void* process_client(void* arg)
                 {
                     if(places[i] == 0)
                     {
-                        //fprintf(stderr, "enter  in %d\n", i);
                         args->pl = i;
                         places[i] = 1;
                         has_room = true;
