@@ -85,11 +85,11 @@ void *pedidos(void *arg)
 
         if (pl == -1 && dur == -1) //closing
         {
-            writeRegister(i, pid, tid, dur, pl, CLOSD);
+            writeRegister(id, pid, tid, dur, pl, CLOSD);
             wc_open = false;
         }
         else//open
-            writeRegister(i, pid, tid, dur, pl, IAMIN);
+            writeRegister(id, pid, tid, dur, pl, IAMIN);
     }
 
     close(fd_priv);

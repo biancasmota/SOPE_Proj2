@@ -136,23 +136,29 @@ void* process_client(void* arg)
         else
         {
             bool has_room = false;
+            pthread_mutex_lock(&mutex);
             for(int i = 0; i < args->nPlaces; i++)
             {
                 if(places[i] == 0)
                 {
-                    fprintf(stderr, "enter  in %d\n", i);
+                    //fprintf(stderr, "enter  in %d\n", i);
                     args->pl = i;
                     places[i] = 1;
                     has_room = true;
                     break;
                 }
             }
+            pthread_mutex_unlock(&mutex);
             if(!has_room)
             {
+                pthread_mutex_lock(&mutex);    
                 enqueue(&wc_queue,args->i);
                 while(1)
                 {
-                    if(!in_queue(wc_queue,args->i)) break;
+                    if(!in_queue(wc_queue,args->i))
+                    { 
+                        break;
+                    }
                 }
                 for(int i = 0; i < args->nPlaces; i++)
                 {
@@ -164,14 +170,16 @@ void* process_client(void* arg)
                         break;
                     }
                 }
+                pthread_mutex_unlock(&mutex);
             }
+            if(!has_room) args->pl = -3;
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, getpid(), tid, args->dur, args->pl+1);
             messagelen=strlen(message)+1;
             if(write(fd,message,messagelen) < 0)
                 fprintf(stderr, "Couldnt write to private fifo\n");
             printf("%ld ; %d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
             usleep(args->dur * 1000);
-            fprintf(stderr, "Out of %d, has_room:%d\n", args->pl, has_room);
+            //fprintf(stderr, "Out of %d, has_room:%d\n", args->pl, has_room);
             printf("%ld ; %d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
             places[args->pl] = 0;
             if(wc_queue != NULL) dequeue(&wc_queue);
@@ -192,6 +200,11 @@ void* look_for_clients(void* arg)
     main_fifo_fd=open((char*)this_args->FIFO_path,O_RDONLY);
 
     places = malloc(sizeof(int)*this_args->nplaces);
+    for(int i = 0; i < this_args->nplaces; i++)
+    {
+        places[i] = 0;
+    }
+
     for(int i = 0; i < this_args->nplaces; i++)
     {
         places[i] = 0;

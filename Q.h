@@ -23,6 +23,8 @@ int* places;
 int line[MAX_THREADS] = {0};
 node_t* wc_queue = NULL;
 
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 typedef struct process_client_args
 {
 	int i;
