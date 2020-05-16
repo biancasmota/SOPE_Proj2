@@ -24,3 +24,12 @@ Os clientes vão tentar entrar a partir do monto da execução do programa, ou s
 	A **main** processa os argumentos da linha de comando através de **processArgs**, começa a contar o tempo e chama **look_for_clients** para ficar olhando o fifo verificando o canal público de comunicação com o cliente, tarefa que é feita em uma thread separada, para não impedir a contagem do tempo enquanto se aguarda a conexão do cliente.
 	
 	Quando **look_for_clients** detecta uma comunicação do cliente chama **process_client** que tratará o pedido do cliente, e comunicará com o cliente
+
+
+**OBS:
+O programa só funciona para tempos pequenos no nsces**
+
+
+**Quando o numero de threads é limitado alguns pedidos do cliente são feitos mas não há threads disponíveis,
+quando elas estão disponíveis por vezes o banheiro já fechou, e elas recebem a resposta que o banheiro está fechado, mesmo
+que o pedido tenha sido feito com ele aberto**
