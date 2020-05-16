@@ -137,17 +137,6 @@ void* process_client(void* arg)
         }
         else
         {
-            //bool has_room = false;
-            for(int i = 0; i < args->nPlaces; i++)
-            {
-                if(places[i] == 0)
-                {
-                    args->pl = i;
-                    places[i] = 1;
-                    //has_room = true;
-                    break;
-                }
-            }
             pthread_mutex_lock(&mutex);
             bool has_room = false;
             while(!has_room)
