@@ -171,6 +171,7 @@ void* process_client(void* arg)
             }
         }
     }
+    sem_post(&semaphore);
     free(args);
     close(fd);
     return NULL;
@@ -184,6 +185,8 @@ void* look_for_clients(void* arg)
     char  str[100000];
     mkfifo(this_args->FIFO_path,0660);
 
+
+
     if((main_fifo_fd=open((char*)this_args->FIFO_path,O_RDONLY)) < 0)
     {
         fprintf(stderr, "Error public opening FIFO\n");
@@ -196,6 +199,8 @@ void* look_for_clients(void* arg)
     {
         places[i] = 0;
     }
+
+    sem_init(&semaphore, 0, this_args->nthreads-1); 
 
     while(readline(main_fifo_fd,str))
     {
@@ -211,6 +216,7 @@ void* look_for_clients(void* arg)
                 fprintf(stderr,"System max threads reached\n");
                 break;
             }
+            sem_wait(&semaphore);
             curr_thread++;
             if(curr_thread > MAX_THREADS)
             {

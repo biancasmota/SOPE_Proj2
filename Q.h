@@ -25,6 +25,7 @@ int line[MAX_THREADS] = {0};
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 sem_t sem; 
+sem_t semaphore; 
 
 typedef struct process_client_args
 {
