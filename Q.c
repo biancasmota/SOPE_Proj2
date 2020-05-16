@@ -137,15 +137,18 @@ void* process_client(void* arg)
         {
             pthread_mutex_lock(&mutex);
             bool has_room = false;
-            for(int i = 0; i < args->nPlaces; i++)
+            while(!has_room)
             {
-                if(places[i] == 0)
+                for(int i = 0; i < args->nPlaces; i++)
                 {
-                    //fprintf(stderr, "enter  in %d\n", i);
-                    args->pl = i;
-                    places[i] = 1;
-                    has_room = true;
-                    break;
+                    if(places[i] == 0)
+                    {
+                        //fprintf(stderr, "enter  in %d\n", i);
+                        args->pl = i;
+                        places[i] = 1;
+                        has_room = true;
+                        break;
+                    }
                 }
             }
             pthread_mutex_unlock(&mutex);
