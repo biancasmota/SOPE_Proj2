@@ -148,6 +148,24 @@ void* process_client(void* arg)
                     break;
                 }
             }
+            pthread_mutex_lock(&mutex);
+            bool has_room = false;
+            while(!has_room)
+            {
+                for(int i = 0; i < args->nPlaces; i++)
+                {
+                    if(places[i] == 0)
+                    {
+                        args->pl = i;
+                        places[i] = 1;
+                        has_room = true;
+                        break;
+                    }
+                }
+            }
+            pthread_mutex_unlock(&mutex);
+            if(!has_room) 
+                args->pl = -3;
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, getpid(), tid, args->dur, args->pl+1);
             messagelen=strlen(message)+1;
             if(write(fd,message,messagelen) < 0)
@@ -171,10 +189,9 @@ void* look_for_clients(void* arg)
     char  str[100000];
     mkfifo(this_args->FIFO_path,0660);
 
-
     if((main_fifo_fd=open((char*)this_args->FIFO_path,O_RDONLY)) < 0)
     {
-        fprintf(stderr, "Error opening FIFO\n");
+        fprintf(stderr, "Error public opening FIFO\n");
         return NULL;
     }
 

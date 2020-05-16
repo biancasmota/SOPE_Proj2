@@ -21,6 +21,8 @@ int main_fifo_fd = -1;
 int* places;
 int line[MAX_THREADS] = {0};
 
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 typedef struct process_client_args
 {
 	int i;
