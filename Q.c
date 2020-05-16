@@ -137,11 +137,11 @@ void* process_client(void* arg)
         }
         else
         {
-            //pthread_mutex_lock(&mutex);
             bool has_room = false;
             sem_wait(&sem);
             while(!has_room)
             {
+                pthread_mutex_lock(&mutex);
                 for(int i = 0; i < args->nPlaces; i++)
                 {
                     if(places[i] == 0)
@@ -153,19 +153,22 @@ void* process_client(void* arg)
                         break;
                     }
                 }
+                pthread_mutex_unlock(&mutex);
             }
-            //pthread_mutex_unlock(&mutex);
             if(!has_room) 
                 args->pl = -3;
             sprintf(message,"[ %d, %d, %ld, %d, %d ]\n", args->i, getpid(), tid, args->dur, args->pl+1);
             messagelen=strlen(message)+1;
             if(write(fd,message,messagelen) < 0)
                 fprintf(stderr, "Couldnt write to private fifo\n");
-            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
-            usleep(args->dur * 1000);
-            printf("%ld ; %d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
-            places[args->pl] = 0;
-            sem_post(&sem);
+            else
+            {
+                printf("%ld ; %d ; %d ; %ld ; %d ; %d ; ENTER\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
+                usleep(args->dur * 1000);
+                printf("%ld ; %d ; %d ; %ld ; %d ; %d ; TIMUP\n", time(NULL), args->i, getpid(), tid, args->dur, args->pl+1);
+                places[args->pl] = 0;
+                sem_post(&sem);
+            }
         }
     }
     free(args);

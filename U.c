@@ -74,6 +74,8 @@ void *pedidos(void *arg)
     if ((fd_priv = open(private_fifo, O_RDONLY)) < 0) //open private FIFO
     {
         fprintf(stderr, "Error opening private FIFO\n");
+        unlink(private_fifo);
+        remove(private_fifo);
         return NULL;
     }
 
